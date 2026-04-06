@@ -1,0 +1,29 @@
+{
+  "name": "com.rolandkaechele.physicsmanager",
+  "displayName": "Physics Manager",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "Manages physics simulation and collision detection. Profile-based gravity and timestep switching, collision layer rules, impact events, physics pause/resume, and JSON modding support.",
+  "author": {
+    "name": "Roland Kaechele",
+    "url": "https://github.com/RolandKaechele/PhysicsManager"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RolandKaechele/PhysicsManager.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "unity",
+    "physics",
+    "collision",
+    "gravity",
+    "simulation",
+    "modding",
+    "framework"
+  ],
+  "documentationUrl": "https://github.com/RolandKaechele/PhysicsManager#readme",
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  }
+}
