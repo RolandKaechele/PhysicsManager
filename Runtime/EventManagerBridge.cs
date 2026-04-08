@@ -45,10 +45,10 @@ namespace PhysicsManager.Runtime
         }
 
         private void HandleImpact(ImpactData data)
-            => _eventManager?.FireEvent("physics.impact", data.impulse.ToString("F2"));
+            => _eventManager?.Fire("physics.impact", data.impulse.ToString("F2"));
 
         private void HandleProfileChanged(string prev, string next)
-            => _eventManager?.FireEvent("physics.profile.changed", next);
+            => _eventManager?.Fire("physics.profile.changed", next);
     }
 }
 #endif
