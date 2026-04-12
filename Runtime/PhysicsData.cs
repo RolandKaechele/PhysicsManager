@@ -75,6 +75,9 @@ namespace PhysicsManager.Runtime
     [Serializable]
     public class CollisionLayerRule
     {
+        /// <summary>Unique identifier (e.g. "player_vs_enemy"). Auto-generated as "{layerA}_vs_{layerB}" when empty.</summary>
+        public string id;
+
         /// <summary>Name of the first layer (as in Project Settings › Physics › Layer Collision Matrix).</summary>
         public string layerA;
 

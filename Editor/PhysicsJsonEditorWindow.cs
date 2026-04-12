@@ -19,10 +19,8 @@ namespace PhysicsManager.Editor
     /// </summary>
     public class PhysicsJsonEditorWindow : EditorWindow
     {
-        private const string ProfilesFolderName   = "physics_profiles";
-        private const string ProfilesSaveFileName = "physics_profiles.json";
-        private const string CollisionFolderName   = "collision_rules";
-        private const string CollisionSaveFileName = "collision_rules.json";
+        private const string ProfilesFolderName = "physics_profiles";
+        private const string CollisionFolderName = "collision_rules";
 
         private PhysicsDataEditorBridge  _bridge;
         private UnityEditor.Editor       _bridgeEditor;
@@ -92,7 +90,6 @@ namespace PhysicsManager.Editor
                 else
                 {
                     Directory.CreateDirectory(profilesFolderPath);
-                    File.WriteAllText(Path.Combine(profilesFolderPath, ProfilesSaveFileName), JsonUtility.ToJson(new PhysicsProfilesEditorWrapper(), true));
                     AssetDatabase.Refresh();
                 }
 
@@ -108,7 +105,6 @@ namespace PhysicsManager.Editor
                 else
                 {
                     Directory.CreateDirectory(collisionFolderPath);
-                    File.WriteAllText(Path.Combine(collisionFolderPath, CollisionSaveFileName), JsonUtility.ToJson(new CollisionRulesEditorWrapper(), true));
                     AssetDatabase.Refresh();
                 }
 
@@ -130,14 +126,28 @@ namespace PhysicsManager.Editor
                 if (!Directory.Exists(profilesFolderPath))  Directory.CreateDirectory(profilesFolderPath);
                 if (!Directory.Exists(collisionFolderPath)) Directory.CreateDirectory(collisionFolderPath);
 
-                var pw = new PhysicsProfilesEditorWrapper { profiles = _bridge.profiles.ToArray() };
-                File.WriteAllText(Path.Combine(profilesFolderPath, ProfilesSaveFileName), JsonUtility.ToJson(pw, true));
+                int savedProfiles = 0;
+                foreach (var entry in _bridge.profiles)
+                {
+                    if (string.IsNullOrEmpty(entry.id)) continue;
+                    var pw = new PhysicsProfilesEditorWrapper { profiles = new[] { entry } };
+                    File.WriteAllText(Path.Combine(profilesFolderPath, $"{entry.id}.json"), JsonUtility.ToJson(pw, true));
+                    savedProfiles++;
+                }
 
-                var cw = new CollisionRulesEditorWrapper { collisionRules = _bridge.collisionRules.ToArray() };
-                File.WriteAllText(Path.Combine(collisionFolderPath, CollisionSaveFileName), JsonUtility.ToJson(cw, true));
+                int savedRules = 0;
+                foreach (var entry in _bridge.collisionRules)
+                {
+                    var fileId = string.IsNullOrEmpty(entry.id)
+                        ? $"{entry.layerA}_vs_{entry.layerB}".ToLower()
+                        : entry.id;
+                    var cw = new CollisionRulesEditorWrapper { collisionRules = new[] { entry } };
+                    File.WriteAllText(Path.Combine(collisionFolderPath, $"{fileId}.json"), JsonUtility.ToJson(cw, true));
+                    savedRules++;
+                }
 
                 AssetDatabase.Refresh();
-                _status = $"Saved {_bridge.profiles.Count} profiles to {ProfilesFolderName}/{ProfilesSaveFileName}, {_bridge.collisionRules.Count} rules to {CollisionFolderName}/{CollisionSaveFileName}.";
+                _status = $"Saved {savedProfiles} profile file(s) to {ProfilesFolderName}/, {savedRules} rule file(s) to {CollisionFolderName}/";
                 _statusError = false;
             }
             catch (Exception e) { _status = $"Save error: {e.Message}"; _statusError = true; }

@@ -1,0 +1,18 @@
+﻿{
+    "profiles":  [
+                     {
+                         "id":  "underwater",
+                         "label":  "Underwater",
+                         "gravity":  {
+                                         "x":  0,
+                                         "y":  -2.0,
+                                         "z":  0
+                                     },
+                         "fixedTimestep":  0.02,
+                         "maxAllowedTimestep":  0.3333,
+                         "autoSimulation":  true,
+                         "simulationMode":  0,
+                         "sleepThreshold":  0.005
+                     }
+                 ]
+}

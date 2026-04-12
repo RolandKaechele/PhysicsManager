@@ -170,7 +170,7 @@ Edits profiles and collision rules stored in two separate folders: `StreamingAss
 | ------ | ------ |
 | **Load** | Reads all `*.json` from `StreamingAssets/physics_profiles/` and `StreamingAssets/collision_rules/`; creates missing folders automatically |
 | **Edit** | Add / remove / reorder profiles and collision rules using the Inspector list |
-| **Save** | Writes profiles to `physics_profiles/physics_profiles.json` and collision rules to `collision_rules/collision_rules.json`; calls `AssetDatabase.Refresh()` |
+| **Save** | Writes each profile as `<id>.json` to `StreamingAssets/physics_profiles/` and each collision rule as `<id>.json` to `StreamingAssets/collision_rules/`; entries without an `id` are skipped. Calls `AssetDatabase.Refresh()` |
 
 With **ODIN_INSPECTOR** active, lists use Odin's enhanced drawer (drag-to-sort, collapsible entries).
 

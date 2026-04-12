@@ -1,6 +1,7 @@
-{
+﻿{
     "collisionRules":  [
                            {
+                               "id":  "player_vs_enemy",
                                "layerA":  "Player",
                                "layerB":  "Enemy",
                                "enabled":  true
