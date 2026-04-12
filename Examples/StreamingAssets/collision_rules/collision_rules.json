@@ -1,0 +1,9 @@
+{
+    "collisionRules":  [
+                           {
+                               "layerA":  "Player",
+                               "layerB":  "Enemy",
+                               "enabled":  true
+                           }
+                       ]
+}

@@ -62,11 +62,14 @@ namespace PhysicsManager.Runtime
         [SerializeField] private float impactThreshold = 5f;
 
         [Header("Modding / JSON")]
-        [Tooltip("Merge additional profiles and collision rules from StreamingAssets/<jsonPath> at startup.")]
+        [Tooltip("Merge additional profiles from StreamingAssets/<jsonPath> at startup.")]
         [SerializeField] private bool loadFromJson = false;
 
-        [Tooltip("Path relative to StreamingAssets/ (e.g. 'physics.json').")]
-        [SerializeField] private string jsonPath = "physics.json";
+        [Tooltip("Path relative to StreamingAssets/ for physics profiles (e.g. 'physics_profiles/' or 'physics_profiles.json').")]
+        [SerializeField] private string jsonPath = "physics_profiles/";
+
+        [Tooltip("Path relative to StreamingAssets/ for collision rules (e.g. 'collision_rules/' or 'collision_rules.json').")]
+        [SerializeField] private string collisionJsonPath = "collision_rules/";
 
         [Header("Debug")]
         [Tooltip("Log profile switches and collision rule changes to the Console.")]
@@ -279,39 +282,86 @@ namespace PhysicsManager.Runtime
 
         private void LoadJsonDefinitions()
         {
-            string fullPath = Path.Combine(Application.streamingAssetsPath, jsonPath);
-            if (!File.Exists(fullPath)) return;
+            // ── Load physics profiles ──────────────────────────────────────────────
+            string profileFullPath = Path.Combine(Application.streamingAssetsPath, jsonPath);
+            if (Directory.Exists(profileFullPath))
+            {
+                foreach (var file in Directory.GetFiles(profileFullPath, "*.json", SearchOption.TopDirectoryOnly))
+                    MergePhysicsProfilesFromFile(file);
+            }
+            else if (File.Exists(profileFullPath))
+            {
+                MergePhysicsProfilesFromFile(profileFullPath);
+            }
+            else
+            {
+                Debug.LogWarning($"[PhysicsManager] Profiles JSON not found: {profileFullPath}");
+            }
+
+            // ── Load collision rules ───────────────────────────────────────────────
+            string collisionFullPath = Path.Combine(Application.streamingAssetsPath, collisionJsonPath);
+            if (Directory.Exists(collisionFullPath))
+            {
+                foreach (var file in Directory.GetFiles(collisionFullPath, "*.json", SearchOption.TopDirectoryOnly))
+                    MergeCollisionRulesFromFile(file);
+            }
+            else if (File.Exists(collisionFullPath))
+            {
+                MergeCollisionRulesFromFile(collisionFullPath);
+            }
+            else
+            {
+                Debug.LogWarning($"[PhysicsManager] Collision rules JSON not found: {collisionFullPath}");
+            }
+        }
+
+        private void MergePhysicsProfilesFromFile(string path)
+        {
             try
             {
-                string json = File.ReadAllText(fullPath);
-                var root = JsonUtility.FromJson<PhysicsDataRoot>(json);
-                if (root == null) return;
+                string json = File.ReadAllText(path);
+                var root = JsonUtility.FromJson<PhysicsProfilesRoot>(json);
+                if (root?.profiles == null) return;
+                foreach (var p in root.profiles)
+                {
+                    if (p == null || string.IsNullOrEmpty(p.id)) continue;
+                    p.rawJson = json;
+                    _profileIndex[p.id] = p;
+                    if (verboseLogging) Debug.Log($"[PhysicsManager] JSON profile override '{p.id}'.");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[PhysicsManager] Failed to load profiles from '{path}': {e.Message}");
+            }
+        }
 
-                if (root.profiles != null)
-                    foreach (var p in root.profiles)
-                    {
-                        if (p == null || string.IsNullOrEmpty(p.id)) continue;
-                        p.rawJson = json;
-                        _profileIndex[p.id] = p;
-                        if (verboseLogging) Debug.Log($"[PhysicsManager] JSON profile override '{p.id}'.");
-                    }
-
-                if (root.collisionRules != null)
+        private void MergeCollisionRulesFromFile(string path)
+        {
+            try
+            {
+                var root = JsonUtility.FromJson<CollisionRulesRoot>(File.ReadAllText(path));
+                if (root?.collisionRules != null)
                     ApplyCollisionRules(root.collisionRules);
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"[PhysicsManager] Failed to load JSON from '{fullPath}': {e.Message}");
+                Debug.LogWarning($"[PhysicsManager] Failed to load collision rules from '{path}': {e.Message}");
             }
         }
 
-        // ─── JSON wrapper ─────────────────────────────────────────────────────────
+        // ─── JSON wrappers ────────────────────────────────────────────────────────
 
         [Serializable]
-        private class PhysicsDataRoot
+        private class PhysicsProfilesRoot
         {
-            public List<PhysicsProfile>      profiles;
-            public List<CollisionLayerRule>  collisionRules;
+            public List<PhysicsProfile> profiles;
+        }
+
+        [Serializable]
+        private class CollisionRulesRoot
+        {
+            public List<CollisionLayerRule> collisionRules;
         }
     }
 }

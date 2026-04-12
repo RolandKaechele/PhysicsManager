@@ -12,7 +12,7 @@ Optionally integrates with [StateManager](https://github.com/RolandKaechele/Stat
 - **Pause / Resume** — suspend physics simulation (e.g. during cutscenes or loading screens) and restore on resume
 - **Impact events** — `ImpactReporter` component aggregates collision impulses; `OnImpact` fires above your configured threshold
 - **Time-scale helpers** — `SetTimeScale()` / `ResetTimeScale()` maintain a stable fixed timestep ratio
-- **JSON authoring** — define profiles and collision rules in `StreamingAssets/physics.json`; no recompile required
+- **JSON authoring** — define profiles in `StreamingAssets/physics_profiles/` and collision rules in `StreamingAssets/collision_rules/`; no recompile required
 - **Modding support** — JSON entries are merged over Inspector entries by id at runtime
 - **StateManager integration** — `StateManagerBridge` auto-pauses/resumes physics on Cutscene or Loading states (activated via `PHYSICSMANAGER_STM`)
 - **EventManager integration** — `EventManagerBridge` fires `physics.impact` and `physics.profile.changed` events (activated via `PHYSICSMANAGER_EM`)
@@ -81,7 +81,7 @@ pm.OnImpact += data => Debug.Log($"Impact {data.impulse:F1} at {data.point}");
 
 ## Physics JSON Format
 
-`StreamingAssets/physics.json`:
+**`StreamingAssets/physics_profiles/`** — physics profiles (example: `physics_profiles/main.json`):
 
 ```json
 {
@@ -96,7 +96,14 @@ pm.OnImpact += data => Debug.Log($"Impact {data.impulse:F1} at {data.point}");
       "simulationMode": 0,
       "sleepThreshold": 0.005
     }
-  ],
+  ]
+}
+```
+
+**`StreamingAssets/collision_rules/`** — collision layer rules (example: `collision_rules/main.json`):
+
+```json
+{
   "collisionRules": [
     { "layerA": "Player", "layerB": "Enemy", "enabled": true }
   ]
@@ -157,13 +164,13 @@ pm.OnImpact += data => Debug.Log($"Impact {data.impulse:F1} at {data.point}");
 
 Open via **JSON Editors → Physics Manager** in the Unity menu bar, or via the **Open JSON Editor** button in the PhysicsManager Inspector.
 
-Edits two arrays in `StreamingAssets/physics.json`: **Profiles** (`PhysicsProfile`) and **Collision Rules** (`CollisionLayerRule`).
+Edits profiles and collision rules stored in two separate folders: `StreamingAssets/physics_profiles/` (`PhysicsProfile`) and `StreamingAssets/collision_rules/` (`CollisionLayerRule`).
 
 | Action | Result |
 | ------ | ------ |
-| **Load** | Reads `StreamingAssets/physics.json`; creates the file if missing |
+| **Load** | Reads all `*.json` from `StreamingAssets/physics_profiles/` and `StreamingAssets/collision_rules/`; creates missing folders automatically |
 | **Edit** | Add / remove / reorder profiles and collision rules using the Inspector list |
-| **Save** | Writes back to `StreamingAssets/physics.json` and calls `AssetDatabase.Refresh()` |
+| **Save** | Writes profiles to `physics_profiles/physics_profiles.json` and collision rules to `collision_rules/collision_rules.json`; calls `AssetDatabase.Refresh()` |
 
 With **ODIN_INSPECTOR** active, lists use Odin's enhanced drawer (drag-to-sort, collapsible entries).
 
