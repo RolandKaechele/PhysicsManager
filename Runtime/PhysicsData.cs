@@ -47,10 +47,10 @@ namespace PhysicsManager.Runtime
         public float maxAllowedTimestep = 0.3333f;
 
         /// <summary>Global default physics material bounce combine.</summary>
-        public PhysicsMaterialCombine bounceCombine = PhysicsMaterialCombine.Average;
+        public PhysicMaterialCombine bounceCombine = PhysicMaterialCombine.Average;
 
         /// <summary>Global default physics material friction combine.</summary>
-        public PhysicsMaterialCombine frictionCombine = PhysicsMaterialCombine.Average;
+        public PhysicMaterialCombine frictionCombine = PhysicMaterialCombine.Average;
 
         /// <summary>Whether to automatically simulate physics (Unity's Physics.autoSimulation).</summary>
         public bool autoSimulation = true;
