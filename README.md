@@ -153,6 +153,21 @@ pm.OnImpact += data => Debug.Log($"Impact {data.impulse:F1} at {data.point}");
 | `ResetTimeScale()` | Ramp time scale back to 1 |
 
 
+## Editor Tools
+
+Open via **JSON Editors → Physics Manager** in the Unity menu bar, or via the **Open JSON Editor** button in the PhysicsManager Inspector.
+
+Edits two arrays in `StreamingAssets/physics.json`: **Profiles** (`PhysicsProfile`) and **Collision Rules** (`CollisionLayerRule`).
+
+| Action | Result |
+| ------ | ------ |
+| **Load** | Reads `StreamingAssets/physics.json`; creates the file if missing |
+| **Edit** | Add / remove / reorder profiles and collision rules using the Inspector list |
+| **Save** | Writes back to `StreamingAssets/physics.json` and calls `AssetDatabase.Refresh()` |
+
+With **ODIN_INSPECTOR** active, lists use Odin's enhanced drawer (drag-to-sort, collapsible entries).
+
+
 ## Dependencies
 
 | Dependency | Required | Notes |

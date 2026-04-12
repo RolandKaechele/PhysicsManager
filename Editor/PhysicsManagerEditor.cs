@@ -17,6 +17,9 @@ namespace PhysicsManager.Editor
         {
             DrawDefaultInspector();
 
+            EditorGUILayout.Space(4);
+            if (GUILayout.Button("Open JSON Editor")) PhysicsJsonEditorWindow.ShowWindow();
+
             var mgr = (PhysicsManager.Runtime.PhysicsManager)target;
 
             EditorGUILayout.Space(8);
